@@ -1,6 +1,7 @@
 package timerqueue
 
 import (
+	"context"
 	"math/rand"
 	"testing"
 	"time"
@@ -12,7 +13,7 @@ type object struct {
 
 var executed int
 
-func (o *object) OnTimer(t time.Time) {
+func (o *object) OnTimer(ctx context.Context, t time.Time) {
 	executed++
 }
 
@@ -64,7 +65,7 @@ func TestAdvance(t *testing.T) {
 		lastTime := now.Add(time.Duration(count) * time.Hour)
 
 		for adv := 0; adv < 5; adv++ {
-			queue.Advance(lastTime)
+			queue.Advance(context.Background(), lastTime)
 			if executed != count {
 				t.Errorf("Advance failed.\n"+
 					"Should have executed %d times.\n"+

@@ -4,6 +4,7 @@ package timerqueue
 
 import (
 	"container/heap"
+	"context"
 	"errors"
 	"time"
 )
@@ -11,7 +12,7 @@ import (
 // Timer is an interface that types implement to schedule and receive OnTimer
 // callbacks.
 type Timer interface {
-	OnTimer(t time.Time)
+	OnTimer(ctx context.Context, t time.Time)
 }
 
 // Queue is a time-sorted collection of Timer objects.
@@ -103,12 +104,12 @@ func (q *Queue) PeekFirst() (t Timer, tm time.Time) {
 // Advance executes OnTimer callbacks for all timers scheduled to be
 // run before the time 'tm'. Executed timers are removed from the
 // timer queue.
-func (q *Queue) Advance(tm time.Time) {
+func (q *Queue) Advance(ctx context.Context, tm time.Time) {
 	for len(q.heap) > 0 && !tm.Before(q.heap[0].time) {
 		data := q.heap[0]
 		heap.Remove(&q.heap, data.index)
 		delete(q.table, data.timer)
-		data.timer.OnTimer(data.time)
+		data.timer.OnTimer(ctx, data.time)
 	}
 }
 

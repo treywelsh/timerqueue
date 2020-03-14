@@ -1,15 +1,16 @@
 package timerqueue_test
 
 import (
+	"context"
 	"fmt"
 	"time"
 
-	"github.com/beevik/timerqueue"
+	"github.com/treywelsh/timerqueue"
 )
 
 type event int
 
-func (e event) OnTimer(t time.Time) {
+func (e event) OnTimer(ctx context.Context, t time.Time) {
 	fmt.Printf("  Event %d executed at %v\n", int(e), t)
 }
 
@@ -26,10 +27,10 @@ func ExampleQueue() {
 	}
 
 	fmt.Println("Advancing to Jan 4...")
-	queue.Advance(time.Date(2015, 1, 4, 0, 0, 0, 0, time.UTC))
+	queue.Advance(context.Background(), time.Date(2015, 1, 4, 0, 0, 0, 0, time.UTC))
 
 	fmt.Println("Advancing to Jan 10...")
-	queue.Advance(time.Date(2015, 1, 10, 0, 0, 0, 0, time.UTC))
+	queue.Advance(context.Background(), time.Date(2015, 1, 10, 0, 0, 0, 0, time.UTC))
 
 	// Output:
 	// Advancing to Jan 4...

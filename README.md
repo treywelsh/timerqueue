@@ -18,7 +18,7 @@ creates a timerqueue, and adds three events to the timerqueue.
 ```go
 type event int
 
-func (e event) OnTimer(t time.Time) {
+func (e event) OnTimer(ctx context.Context, t time.Time) {
     fmt.Printf("event.OnTimer %d fired at %v\n", int(e), t)
 }
 
@@ -78,9 +78,12 @@ before the requested time. Timers are removed from the timerqueue
 in order of their scheduling.
 
 ```go
+cmdCtx, cancel := context.WithTimeout(ctx, timeout)
+defer cancel()
+
 // Call the OnTimer method for each event scheduled before
 // January 10, 2015. Pop the called timer from the queue.
-queue.Advance(time.Date(2015, 1, 10, 0, 0, 0, 0, time.UTC))
+queue.Advance(cmdCtx, time.Date(2015, 1, 10, 0, 0, 0, 0, time.UTC))
 ```
 
 Output:
