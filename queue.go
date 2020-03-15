@@ -13,6 +13,7 @@ import (
 // callbacks.
 type Timer interface {
 	OnTimer(ctx context.Context, t time.Time)
+	Next(time.Time) time.Time
 }
 
 // Queue is a time-sorted collection of Timer objects.
@@ -101,15 +102,34 @@ func (q *Queue) PeekFirst() (t Timer, tm time.Time) {
 	return nil, time.Time{}
 }
 
-// Advance executes OnTimer callbacks for all timers scheduled to be
+// AdvanceOnce executes OnTimer callbacks for all timers scheduled to be
 // run before the time 'tm'. Executed timers are removed from the
 // timer queue.
+func (q *Queue) AdvanceOnce(ctx context.Context, tm time.Time) {
+	for len(q.heap) > 0 && !tm.Before(q.heap[0].time) {
+		data := q.heap[0]
+		heap.Remove(&q.heap, data.index)
+		delete(q.table, data.timer)
+
+		// Exec timer
+		data.timer.OnTimer(ctx, data.time)
+	}
+}
+
+// Advance executes OnTimer callbacks for all timers scheduled to be
+// run before the time 'tm'. Executed timers are reinserted in the
+// timer queue at the next time of occurence.
 func (q *Queue) Advance(ctx context.Context, tm time.Time) {
 	for len(q.heap) > 0 && !tm.Before(q.heap[0].time) {
 		data := q.heap[0]
 		heap.Remove(&q.heap, data.index)
 		delete(q.table, data.timer)
+
+		// Exec timer
 		data.timer.OnTimer(ctx, data.time)
+
+		// Schedule next
+		q.Schedule(data.timer, data.timer.Next(tm))
 	}
 }
 

@@ -17,6 +17,10 @@ func (o *object) OnTimer(ctx context.Context, t time.Time) {
 	executed++
 }
 
+func (o *object) Next(t time.Time) time.Time {
+	return t.Add(time.Hour)
+}
+
 func populateQueue(t *testing.T, now time.Time) *Queue {
 	q := New()
 
@@ -55,6 +59,26 @@ func TestQueue(t *testing.T) {
 	}
 }
 
+func TestAdvanceOnce(t *testing.T) {
+	for iter := 0; iter < 100; iter++ {
+		now := time.Date(2015, 1, 1, 0, 0, 0, 0, time.UTC)
+		queue := populateQueue(t, now)
+
+		executed = 0
+		count := queue.Len()
+		lastTime := now.Add(time.Duration(count) * time.Hour)
+
+		for adv := 0; adv < 5; adv++ {
+			queue.AdvanceOnce(context.Background(), lastTime)
+			if executed != count {
+				t.Errorf("AdvanceOnce failed.\n"+
+					"Should have executed %d times.\n"+
+					"Only executed %d times.\n", count, executed)
+			}
+		}
+	}
+}
+
 func TestAdvance(t *testing.T) {
 	for iter := 0; iter < 100; iter++ {
 		now := time.Date(2015, 1, 1, 0, 0, 0, 0, time.UTC)
@@ -70,6 +94,11 @@ func TestAdvance(t *testing.T) {
 				t.Errorf("Advance failed.\n"+
 					"Should have executed %d times.\n"+
 					"Only executed %d times.\n", count, executed)
+			}
+			if queue.Len() != count {
+				t.Errorf("Advance failed.\n"+
+					"Queue len should be %d.\n"+
+					"But is %d.\n", count, queue.Len())
 			}
 		}
 	}
