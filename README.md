@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/beevik/timerqueue.svg?branch=master)](https://travis-ci.org/beevik/timerqueue)
-[![GoDoc](https://godoc.org/github.com/beevik/timerqueue?status.svg)](https://godoc.org/github.com/beevik/timerqueue)
+[![Build Status](https://travis-ci.org/treywelsh/timerqueue.svg?branch=master)](https://travis-ci.org/treywelsh/timerqueue)
+[![GoDoc](https://godoc.org/github.com/treywelsh/timerqueue?status.svg)](https://godoc.org/github.com/treywelsh/timerqueue)
 
 timerqueue
 ==========
@@ -7,7 +7,7 @@ timerqueue
 The timerqueue package implements a priority queue for objects scheduled to
 perform actions at clock times.
 
-See http://godoc.org/github.com/beevik/timerqueue for godoc-formatted API
+See http://godoc.org/github.com/treywelsh/timerqueue for godoc-formatted API
 documentation.
 
 ## Example: Scheduling timers
